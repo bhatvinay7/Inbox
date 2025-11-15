@@ -115,6 +115,12 @@ importers:
         specifier: ^8.46.3
         version: 8.46.3(eslint@9.39.1)(typescript@5.9.2)
 
+  packages/prisma:
+    dependencies:
+      '@prisma/client':
+        specifier: ^6.19.0
+        version: 6.19.0(typescript@5.9.2)
+
   packages/rabbitmq: {}
 
   packages/redisClient: {}
@@ -415,6 +421,18 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
+
+  '@prisma/client@6.19.0':
+    resolution: {integrity: sha512-QXFT+N/bva/QI2qoXmjBzL7D6aliPffIwP+81AdTGq0FXDoLxLkWivGMawG8iM5B9BKfxLIXxfWWAF6wbuJU6g==}
+    engines: {node: '>=18.18'}
+    peerDependencies:
+      prisma: '*'
+      typescript: '>=5.1.0'
+    peerDependenciesMeta:
+      prisma:
+        optional: true
+      typescript:
+        optional: true
 
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
@@ -1652,6 +1670,10 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.19.1
+
+  '@prisma/client@6.19.0(typescript@5.9.2)':
+    optionalDependencies:
+      typescript: 5.9.2
 
   '@swc/helpers@0.5.15':
     dependencies:
