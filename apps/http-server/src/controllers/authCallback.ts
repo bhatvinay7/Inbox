@@ -6,26 +6,39 @@ const ACCESS_KEY= process.env.access_key!
 const callbackHandler = async (req: Request, res: Response) => {
   try {
     const data = await getUserdata(req, res);
+    console.log(data)
     if (!data?.email) {
       return res.status(400).json({ message: "Invalid user data" });
     }
-    let user= await User.findOne({ email: data.email });
+    let user= await prisma.user.findFirst({where:{ email: data.email }});
     
     if (!user) {
-      user = await User.create({
+      user = await prisma.user.create({
         name: data.name,
         email: data.email,
         isEmailVerified: true,
         picture: data.picture,
+        refreshToken:data.refresh_token,
+      })
+    }
+
+    else{
+      await prisma.user.update({
+        where:{email:data.email},
+        data:{
+          refreshToken:data.data.refresh_token,
+        }
       })
     }
      const refreshToken = jwt.sign(
       {
         username: user.name!,
         email: user.email!,
-        userId: user._id,
+        userId: user.id,+
         picture:user.picture,
         isVerified:true,
+        google_access_token:data.access_token,
+        google_refresh_token:data.refresh_token
       },
         SECRET_KEY,
       { expiresIn: "24d" }
@@ -34,17 +47,18 @@ const callbackHandler = async (req: Request, res: Response) => {
       {
         username: user.name!,
         email: user.email!,
-        userId: user._id,
+        userId: user.id,
         picture:user.picture,
         isVerified:true,
+        google_access_token:data.access_token,
+        google_refresh_token:data.refresh_token
     
       },
           ACCESS_KEY ,
       { expiresIn: "7d" }
     );
-    await User.findOneAndUpdate({email:user.email},{refreshToken:refreshToken})
     
-    res.cookie("token", refreshToken , {
+    res.cookie("inbox_token", refreshToken , {
       httpOnly: true,
       secure: true,
       sameSite: "none",
@@ -53,8 +67,7 @@ const callbackHandler = async (req: Request, res: Response) => {
       path:"/"
     });
 
-
-    res.redirect(`${process.env.NEXT_PUBLIC_FRONTEND_URL}`);
+    res.redirect(`${process.env.NEXT_PUBLIC_FRONTEND_URL!}`);
   } catch (error: any) {
     console.error("OAuth Error:", error.message);
     return res.status(500).json({ message: "OAuth error", error: error.message });
