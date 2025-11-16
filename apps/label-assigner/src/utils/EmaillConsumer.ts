@@ -1,5 +1,4 @@
 import {assigntagChannel} from 'rabbitmq';
-
 export function receiveMessage(queueName:string){
   try{
     await assigntagChannel.consume(
