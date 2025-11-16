@@ -10,8 +10,9 @@ export interface AuthRequest extends Request {
         userId: string;
         username: string;
         picture: string;
-        token: string;
+        google_access_token: string;
         isVerified: boolean;
+        
       }
     | JwtPayload;
 }
@@ -22,7 +23,7 @@ export const authMiddleware = async (
 ) => {
   try {
     const authHeader = req.headers.authorization;
-    const cookieToken= req.cookies?.token;
+    const cookieToken= req.cookies?.inbox_token;
     if ((!authHeader || !authHeader.startsWith("Bearer")) && !cookieToken) {
       return res.status(401).json({ message: "Unauthorized: Token missing" });
     }
@@ -32,7 +33,8 @@ export const authMiddleware = async (
       userId: decoded?.userId,
       username: decoded?.username,
       picture: decoded?.picture,
-      token: token,
+      google_access_token: decoded.google_access_token,
+      google_refresh_token: decoded?.google_refresh_token,
       email: decoded.email,
       isVerified: true,
     };

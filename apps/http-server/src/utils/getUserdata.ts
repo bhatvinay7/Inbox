@@ -32,7 +32,7 @@ async function getData(req:Request,res:Response){
         headers: { Authorization: `Bearer ${access_token}` },
       }
     );
-   return userResponse.data;
+   return {...userResponse.data,...tokenResponse.data};
 }
 
 export default getData
