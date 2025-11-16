@@ -7,9 +7,20 @@
       }
     ]
   },
+ "baseUrl": ".",
+ "paths": {
+   "types": [
+     "../../packages/types/src/*"
+   ],
+     "paths": {
+    "inbox-ui": ["../../packages/inbox-ui/src/index.ts"]
+  },
+ },
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     "next-env.d.ts",
     "next.config.js",
     ".next/types/**/*.ts"
