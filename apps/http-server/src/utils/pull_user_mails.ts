@@ -19,7 +19,6 @@ export async function fetchLatestEmails(accessToken: string,user_email:string,us
     await client.connect();
     const lock = await client.getMailboxLock("INBOX");
     try {
-        // Get the UID range for latest 40 emails
         const mailbox = client.mailbox;
         const total = mailbox.exists;
         const lastfetchedUID=await redis.get(`${userId}`) ||  null
