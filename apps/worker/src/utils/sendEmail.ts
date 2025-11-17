@@ -1,8 +1,18 @@
 import axios from "axios";
 import dotenv from 'dotenv';
 dotenv.config();
-async function sendEmail(from: string, to: string, subject: string, content: string, accessToken: string) {
-  async function sendMail() {
+interface message{
+  from: string, 
+  to: string,
+  subject: string,
+  content: string,
+  accessToken: string,
+  tag:string
+}
+async function sendEmail(message:string){
+     try{
+    const {from,to,subject,content,accessToken,tag}=JSON.parse(message) as message;
+
     const rawEmail =
       `From:${from} \r\n` +
       `To: ${to}\r\n` +
@@ -27,6 +37,10 @@ async function sendEmail(from: string, to: string, subject: string, content: str
     );
 
     const data = await res.json();
+    
+     // use ai to add the tag to mail and push to worker queue
+     // baed on the response we can trigger the webhook to send replay mail
+
     const response = await axios.post(
       `https://gmail.googleapis.com/gmail/v1/users/me/messages/${data.id}/modify`,
       {
@@ -39,6 +53,8 @@ async function sendEmail(from: string, to: string, subject: string, content: str
         },
       }
     );
-  }
+     }
+     catch(error:any){
 
+     }
 }
