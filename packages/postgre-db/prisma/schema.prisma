@@ -17,5 +17,6 @@ model User {
   createdAt DateTime @default(now())
   session   NoteSession[]
 @@index([id], name: "note_user_id_idx")
+@@index([email], name: "note_user_email_idx")
 }
 

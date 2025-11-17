@@ -73,6 +73,7 @@ services:
     image: "redis:latest"
     environment:
       REDIS_PASSWORD: inbox_password
+      REDIS_USERNAME: inbox_user
     ports:
       - "6379:6379"
     volumes:

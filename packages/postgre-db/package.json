@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
-   "type":"module",
+  "type": "module",
   "scripts": {
     "build": "tsc -b"
   },
@@ -12,16 +12,17 @@
     "typescript": "^5.9.3"
   },
   "types": "./dist/index.d.ts",
-"exports": {
-  ".": {
-    "import": "./dist/index.js",
-    "types": "./dist/index.d.ts"
-  }
-},
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^6.19.0"
+    "@prisma/client": "^6.19.0",
+    "@swc/core": "^1.15.2"
   }
 }

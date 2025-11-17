@@ -1,4 +1,7 @@
 import amqplib from 'amqplib';
+import dotenv from 'dotenv';
+const RABBITMQ_CLUSTER_URL = process.env.RABBITMQ_CLUSTER_URL!;
+dotenv.config();
 let retryAttempt = 0;
 const retryLow = 1000;
 const retryHigh = 30000;
@@ -11,7 +14,7 @@ function getBackoffDelay(attempt: number) {
 async function callRabbit() => {
   const labelQueue = 'labelQueue';
   const labelAssignedQueue = 'workerQueue';
-  const connection = await amqplib.connect('amqp://localhost');
+  const connection = await amqplib.connect(RABBITMQ_CLUSTER_URL!);
 
   const assigntagChannel = await connection.createChannel();
   await assigntagChannel.assertQueue(labelQueue, { durable: true });
