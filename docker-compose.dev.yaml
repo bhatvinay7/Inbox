@@ -1,0 +1,150 @@
+services:
+  inbox-web:
+    build:
+      context: .
+      dockerfile: apps/web/dockerfile.dev.yaml
+    ports:
+      - "3000:3000"
+    env_file:
+      -  appas/web/.env
+    networks:
+      - inbox 
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M     
+  http-server:
+    build:
+      context: .
+      dockerfile: apps/web/dockerfile.dev.yaml
+    ports:
+    - "3002:3002"
+    env_file:
+    -  appas/http-server/.env    
+    networks:
+      - inbox
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 512M       
+  label-assigner:
+    build:
+      context: .
+      dockerfile: apps/label-assigner/dockerfile.dev.yaml
+    ports:
+      - "3007:3007"
+    env_file:
+      -  apps/label-assigner/.env    
+    networks:
+      - inbox
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 512M
+    depends_on:
+      - redis
+      - postgres-db
+      - rabbitmq
+      - elesticsearch               
+  worker:
+    build:
+      context: .
+      dockerfile: apps/worker/dockerfile.dev.yaml
+    ports:
+      - "3008:3008"
+    env_file:
+      -  apps/worker/.env
+    networks:
+      - inbox
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 512M
+    depends_on:
+      - redis
+      - postgres-db
+      - rabbitmq
+      - elesticsearch          
+  redis:
+    image: "redis:latest"
+    environment:
+      REDIS_PASSWORD: inbox_password
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - inbox 
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 512M     
+  postgres-db:
+    image: "postgres:latest"
+    environment:
+      POSTGRES_USER: inbox_user
+      POSTGRES_PASSWORD: inbox_password
+      POSTGRES_DB: inbox_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - inbox
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 512M      
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    environment:
+      RABBITMQ_DEFAULT_USER: inbox_user
+      RABBITMQ_DEFAULT_PASS: inbox_password
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - inbox
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M      
+
+  elesticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.2 
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.monitoring.collection.enabled=true
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data  
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - inbox
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M        
+networks:
+  inbox:
+    driver: bridge          
+volumes:
+  redis-data:      
