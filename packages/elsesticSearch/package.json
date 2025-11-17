@@ -1,5 +1,5 @@
 {
-  "name": "elsesticSearch",
+  "name": "elsesti-search",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -16,7 +16,7 @@
   ".": {
     "import": "./dist/index.js",
     "types": "./dist/index.d.ts"
-  },
+  }
 },  
   "keywords": [],
   "author": "",
