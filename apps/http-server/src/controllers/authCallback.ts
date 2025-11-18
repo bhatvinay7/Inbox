@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import getUserdata from "../utils/getUserdata.js";
+import redis from 'redisclient'
 const SECRET_KEY = process.env.secret_key!;
 const ACCESS_KEY= process.env.access_key!
 const callbackHandler = async (req: Request, res: Response) => {
@@ -11,7 +12,6 @@ const callbackHandler = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid user data" });
     }
     let user= await prisma.user.findFirst({where:{ email: data.email }});
-    
     if (!user) {
       user = await prisma.user.create({
         name: data.name,
@@ -21,7 +21,7 @@ const callbackHandler = async (req: Request, res: Response) => {
         refreshToken:data.refresh_token,
       })
     }
-
+    
     else{
       await prisma.user.update({
         where:{email:data.email},
@@ -30,7 +30,7 @@ const callbackHandler = async (req: Request, res: Response) => {
         }
       })
     }
-     const refreshToken = jwt.sign(
+    const refreshToken = jwt.sign(
       {
         username: user.name!,
         email: user.email!,
@@ -40,7 +40,7 @@ const callbackHandler = async (req: Request, res: Response) => {
         google_access_token:data.access_token,
         google_refresh_token:data.refresh_token
       },
-        SECRET_KEY,
+      SECRET_KEY,
       { expiresIn: "24d" }
     );
     const acces_token = jwt.sign(
@@ -52,12 +52,14 @@ const callbackHandler = async (req: Request, res: Response) => {
         isVerified:true,
         google_access_token:data.access_token,
         google_refresh_token:data.refresh_token
-    
+        
       },
-          ACCESS_KEY ,
+      ACCESS_KEY ,
       { expiresIn: "7d" }
     );
     
+    await redis.set(`${user.id}-access_token`,data.access_token) 
+    await redis.set(`${user.id}-inbox-token`,refreshToken)
     res.cookie("inbox_token", refreshToken , {
       httpOnly: true,
       secure: true,
