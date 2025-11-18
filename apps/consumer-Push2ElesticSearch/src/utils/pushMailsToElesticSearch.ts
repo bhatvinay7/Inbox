@@ -1,7 +1,7 @@
 import client from 'elsesticsearch';
 
 export async function pushMailToElesticSearch(mailData:string){
-    try{
+    try{   
         const mailObject=JSON.parse(mailData);  
         const response=await client.index({
             index:'emails',
