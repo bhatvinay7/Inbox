@@ -33,5 +33,5 @@ async function ensureConnection() {
   console.error("Could not connect to Elasticsearch after 5 attempts.");
   return false;
 }
-ensureConnection();
+await ensureConnection();
 export default client;

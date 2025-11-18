@@ -14,6 +14,7 @@ function getBackoffDelay(attempt: number) {
 async function callRabbit() => {
   const labelQueue = 'labelQueue';
   const labelAssignedQueue = 'workerQueue';
+  const IMAP_MAIL_QUEUE = 'workerQueue';
   const connection = await amqplib.connect(RABBITMQ_CLUSTER_URL!);
 
   const assigntagChannel = await connection.createChannel();
@@ -21,6 +22,9 @@ async function callRabbit() => {
 
   const sendMail= await connection.createChannel();
   await sendMail.assertQueue(labelAssignedQueue, { durable: true });
+  
+  const imapmailChannel = await connection.createChannel();
+  await imapmailChannel.assertQueue(IMAP_MAIL_QUEUE, { durable: true });
 
   connection.on('error', async (err) => {
    const delay = getBackoffDelay(retryAttempt);
@@ -38,5 +42,5 @@ async function callRabbit() => {
  return {ssigntagChannel,sendMail};
 }
 
-const {ssigntagChannel, sendMail} = await callRabbit();
-export {ssigntagChannel, sendMail};
+const {ssigntagChannel, sendMail,labelQueue,labelAssignedQueue,IMAP_MAIL_QUEUE,imapmailChannel} = await callRabbit();
+export {ssigntagChannel, sendMail,labelQueue,labelAssignedQueue,imapmailChannel,IMAP_MAIL_QUEUE};
