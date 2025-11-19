@@ -1,5 +1,5 @@
 import axios from "axios";
-async function refreshAccessToken(refreshToken: string) {
+async function refreshAccessToken(refreshToken: string):Promise<string> {
   const url = "https://oauth2.googleapis.com/token";
 
   const body = {
@@ -12,6 +12,6 @@ async function refreshAccessToken(refreshToken: string) {
   const response = await axios.post(url, body, {
     headers: { "Content-Type": "application/json" }
   });
-  return response.data.access_token;
+  return response.data.access_token as string;
 }
 export default refreshAccessToken

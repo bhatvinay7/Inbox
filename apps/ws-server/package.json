@@ -10,7 +10,10 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "typescript": "^5.9.3"
+    "types": "workspace:*",
+     "ts-node": "^10.9.2",
+     "ts-node-esm": "^0.0.6",
+      "typescript": "^5.9.3",
   },
   "keywords": [],
   "author": "",

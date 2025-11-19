@@ -1,11 +1,12 @@
 import express from 'express';
 const app = express();
-import PullUserMails from './utils/pull_user_mails';
-import pusshMessageToqueue from './utils/publisher';
-import redis from 'redisclient';
-import express from 'express';
+import PullUserMails from './utils/pull_user_mails.js';
+import pushMessageToqueue from './utils/publisher.js';
+import  redisClient from 'redisclient';
+const PORT=3009
 
 async function startMailPublisher() {
+    const redis= await redisClient()
     await redis.connect();
     await redis.on('connect', () => {
         console.log("Redis connected successfully");
@@ -15,7 +16,7 @@ async function startMailPublisher() {
         const { userId, user_email, accessToken } = JSON.parse(message);
         console.log(`Received message to pull mails for user: ${user_email}`);
         const mails = await PullUserMails(user_email, accessToken);
-        await pusshMessageToqueue({ userId, mails });
+        await pushMessageToqueue(userId, mails );
     })
 }
 
@@ -27,6 +28,6 @@ try {
 catch (error: any) {
     console.log(error.message);
 }
-app.listen(3010,"0.0.0.0",()=>{
-    console.log(`server is runnning on port ${3010}`)
+app.listen(PORT,"0.0.0.0",()=>{
+    console.log(`server is runnning on port ${PORT}`)
 })

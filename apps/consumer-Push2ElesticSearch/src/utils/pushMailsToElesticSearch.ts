@@ -1,8 +1,8 @@
 import client from 'elsesticsearch';
-
-export async function pushMailToElesticSearch(mailData:string){
+import {queueData} from 'types'
+export async function pushMailToElesticSearch(mailData:queueData){
     try{   
-        const mailObject=JSON.parse(mailData);  
+        const mailObject=mailData;  
         const response=await client.index({
             index:'emails',
             body:mailObject

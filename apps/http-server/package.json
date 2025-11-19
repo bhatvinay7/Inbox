@@ -14,21 +14,26 @@
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/express": "^5.0.5",
     "ts-node": "^10.9.2",
     "ts-node-esm": "^0.0.6",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "types": "workspace:*"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@types/express": "^5.0.5",
     "axios": "^1.13.2",
+    "@elastic/elasticsearch": "^9.2.0",
+    "redisclient": "workspace:*",
+    "rabbitmq": "workspace:*",
+    "prisma": "workspace:*",
     "body-parser": "^2.2.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2"
-  }
+  },
+  "license": "ISC",
+  "author": "",
+  "keywords": []
 }

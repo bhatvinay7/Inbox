@@ -1,21 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { userCredentials } from "types";
+import { userCredentials,AuthRequest } from "types";
 import dotenv from 'dotenv'
 dotenv.config()
 const JWT_SECRET = process.env.secret_key!;
-export interface AuthRequest extends Request {
-  user?:
-    | {
-        userId: string;
-        username: string;
-        picture: string;
-        google_access_token: string;
-        isVerified: boolean;
-        
-      }
-    | JwtPayload;
-}
 export const authMiddleware = async (
   req: AuthRequest,
   res: Response,

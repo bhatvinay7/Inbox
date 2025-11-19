@@ -1,23 +1,20 @@
 import dotenv from 'dotenv';
-import addCustomTagToMail from './addCustomTagToMail';
-import sendMailThroughGoogleAPI from './sendMail';
-import getAccessToken from './getAccessToken';
-const retryCount = 3
+import addCustomTagToMail from './addCustomTagToMail.js';
+import sendMailThroughGoogleAPI from './sendMail.js';
+import getAccessToken from './getAccessToken.js';
+import redisClient from 'redisclient'
+import {Mail,queueData} from 'types'
+import {google_API_SendMessage_Response} from 'types'
+let retryCount = 3
 dotenv.config();
-interface message {
-  from: string,
-  to: string,
-  subject: string,
-  content: string,
-  accessToken: string,
-  tag: string
-}
 async function sendEmail(message: string) {
   try {
-    let accessToken: any
-    let mailRes: any
-    { accessToken }=JSON.parse(message) as message
-    const { from, to, subject, content, tag } = JSON.parse(message) as message;
+    const redis= await redisClient()
+    let accessToken: string
+    let mailRes:google_API_SendMessage_Response
+    accessToken=await redis.get(`${userId}-access_token`)
+    const {message,userId}=JSON.parse(message) as queueData
+    const { from, to, subject, body, tag } = message
     try {
       mailRes = await sendMailThroughGoogleAPI(from, subject, accessToken)
     }
@@ -32,8 +29,7 @@ async function sendEmail(message: string) {
       }
     }
     try {
-      data = mailRes.json()
-      const response = addCustomTagToMail(accessToken, data.id)
+      await addCustomTagToMail(accessToken, mailRes.id)
     }
     catch (error: any) {
       retryCount = -1
@@ -42,7 +38,7 @@ async function sendEmail(message: string) {
           data = mailRes.json()
           if (error.response.status == 401) {
             const accessToken = await getAccessToken(userId)
-            const response = await addCustomTagToMail(accessToken, data.id)
+            await addCustomTagToMail(accessToken, data.id)
           }
         }
       }
@@ -54,3 +50,5 @@ async function sendEmail(message: string) {
     throw new Error({ message: "Unexpected error occured" })
   }
 }
+
+export default sendEmail

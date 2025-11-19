@@ -1,8 +1,8 @@
 import {labelAssignedQueue,sendMail} from 'rabbitmq';
-import sendEmail from './sendEmail';
+import sendEmail from './sendEmail.js';
 async function  consumeMessageFromAssignTagQueue(){
       try{
-        sendMail.consume(labelAssignedQueue, (msg) => {
+        sendMail.consume(labelAssignedQueue, async(msg) => {
           if (msg !== null) {
             await sendEmail(msg.content.toString());
             sendMail.ack(msg);
@@ -16,3 +16,4 @@ async function  consumeMessageFromAssignTagQueue(){
       }
 
 }
+export default consumeMessageFromAssignTagQueue

@@ -1,11 +1,17 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import getUserdata from "../utils/getUserdata.js";
-import redis from 'redisclient'
+import {AuthRequest } from 'types'
+import getRedisClient from 'redisclient'
+import prisma from 'prisma'
+import dotenv from 'dotenv'
+dotenv.config()
+
 const SECRET_KEY = process.env.secret_key!;
 const ACCESS_KEY= process.env.access_key!
-const callbackHandler = async (req: Request, res: Response) => {
+const callbackHandler = async (req: AuthRequest, res: Response) => {
   try {
+    const redis= await getRedisClient()
     const data = await getUserdata(req, res);
     console.log(data)
     if (!data?.email) {
@@ -34,7 +40,7 @@ const callbackHandler = async (req: Request, res: Response) => {
       {
         username: user.name!,
         email: user.email!,
-        userId: user.id,+
+        userId: user.id,
         picture:user.picture,
         isVerified:true,
         google_access_token:data.access_token,
@@ -69,10 +75,10 @@ const callbackHandler = async (req: Request, res: Response) => {
       path:"/"
     });
 
-    res.redirect(`${process.env.NEXT_PUBLIC_FRONTEND_URL!}`);
+    return res.redirect(`${process.env.NEXT_PUBLIC_FRONTEND_URL!}`);
   } catch (error: any) {
     console.error("OAuth Error:", error.message);
-    return res.status(500).json({ message: "OAuth error", error: error.message });
+    return res.status(500).json({ message: "OAuth error", error: `${error.message}` });
   }
 };
 

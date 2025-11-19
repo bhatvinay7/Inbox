@@ -1,12 +1,14 @@
 import {assigntagChannel} from 'rabbitmq';
-import pusshMessageToqueue from './pblish_mailTo_worker_queue';
-import assignLabel from '../services/labelAssignerService';
-export function consumeMessage(queueName:string){
+import pushMessageToqueue from './pblish_mailTo_worker_queue.js';
+import assignLabel from './agent.js';
+import {queueData} from 'types'
+export async function consumeMessage(queueName:string){
   try{
-    await assigntagChannel.consume(queueName, await(msg) => {
+    await assigntagChannel.consume(queueName, async(msg) => {
     if (msg !== null) {
-     const response=await assignLabel(msg.content.toString()); 
-     await pusshMessageToqueue(JSON.stringify({email:msg.content.toString(),customTag:response}));
+     const {message,userId}=JSON.parse(msg.content.toString()) as queueData
+     const response=await assignLabel(message); 
+     await pushMessageToqueue(JSON.stringify({message:{...message,tag:response},userId:userId}));
       assigntagChannel.ack(msg);
     } else {
       console.log('Consumer cancelled by server');

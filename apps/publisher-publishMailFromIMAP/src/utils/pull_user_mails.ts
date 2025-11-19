@@ -1,27 +1,30 @@
 import { ImapFlow } from "imapflow";
 import dotenv from "dotenv";
-import redis from "redisClient";
+import redisClient from "redisclient";
+import getAccessToken from "./getAccessToken.js";
 dotenv.config();
-
+const retryCount=4
 export async function fetchLatestEmails(accessToken: string,user_email:string,userId:string) {
-    const client = new ImapFlow({
-        host: "imap.gmail.com",
-        port: 993,
-        secure: true,
-        auth: {
-            user: user_email!,
-            accessToken: accessToken,
-            method: "XOAUTH2",
-        },
-        logger: false
-    });
-
-    await client.connect();
-    const lock = await client.getMailboxLock("INBOX");
-    try {
+    try{
+        const redis= await redisClient()
+        const client = new ImapFlow({
+            host: "imap.gmail.com",
+            port: 993,
+            secure: true,
+            auth: {
+                user: user_email!,
+                accessToken: accessToken,
+                method: "XOAUTH2",
+            },
+            logger: false
+        });
+        
+        await client.connect();
+        const lock = await client.getMailboxLock("INBOX");
+        try {
         const mailbox = client.mailbox;
         const total = mailbox.exists;
-        const lastfetchedUID=await redis.get(`${userId}`) ||  null
+        const lastfetchedUID=await redis.get(`${userId}-inbox`) ||  null
         let startURID:number;
         if(!lastfetchedUID){
             startUID=(total-30) >0 ? (total-30)+1 : total
@@ -30,24 +33,35 @@ export async function fetchLatestEmails(accessToken: string,user_email:string,us
             startUID=total-parseInt(lastfetchedUID) +1
         }
         const messages = [];
-       for await (let msg of client.fetch(`${startUID}:*`, {
-        uid: true,
-        envelope: true,
-        flags: true,
-        gmailLabels: true
-})) {
-        messages.push({
-        uid: msg.uid,
-        subject: msg.envelope.subject,
-        from: msg.envelope.from,
-        date: msg.envelope.date,
-        labels: msg.gmailLabels,
-  });
-}
+        for await (let msg of client.fetch(`${startUID}:*`, {
+            uid: true,
+            envelope: true,
+            flags: true,
+            gmailLabels: true
+        })) {
+            messages.push({
+                uid: msg.uid,
+                subject: msg.envelope.subject,
+                from: msg.envelope.from,
+                to: msg.envelope.to,
+                date: msg.envelope.date,
+                labels: msg.gmailLabels,
+            });
+        }
         return messages
     } finally {
         lock.release();
         await client.logout();
     }
+}
+catch(error:any){
+    if(error?.response?.status==401){
+        retryCount+=-1
+        while(retryCount>0){
+        const accessToken=await getAccessToken(userId)
+        await fetchLatestEmails(accessToken,user_email,userId)
+        }
+    }
+}
 }
 export default fetchLatestEmails;

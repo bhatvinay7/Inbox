@@ -1,6 +1,8 @@
 import { GoogleGenAI } from "@google/genai";
-const ai = new GoogleGenAI({api_key:process.env.api_key!});
-asynnc function assignLabel(body:string):Promise<string>{
+import dotenv from 'dotenv'
+dotenv.config()
+const ai = new GoogleGenAI({apiKey:process.env.api_key!});
+async function assignLabel(body:string):Promise<string>{
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
     contents:`Your task: Read the email body provided below and assign the most suitable tag.
@@ -42,7 +44,10 @@ Output JSON format:
 }`
 
   });
-  return response.text
+  if(response?.text){
+    return response?.text
+  }
+  return ""
 }
 
 export default assignLabel;

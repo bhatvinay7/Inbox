@@ -2,15 +2,28 @@
   "name": "worker",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "type":"module",
   "scripts": {
     "dev": " node --loader ts-node/esm src/index.ts",
     "build": "tsc -b",
-    "start": "node  dist/index.js --port 3001"
+    "start": "node  dist/index.js --port 3008"
   },
+  "dependencies": {
+  "dotenv": "^17.2.3",
+  "express": "^5.1.0",
+  "axios": "^1.13.2",
+  "redisclient": "workspace:*",
+  "rabbitmq": "workspace:*"
+    
+},
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+     "@types/express": "^5.0.5",
+     "ts-node": "^10.9.2",
+     "ts-node-esm": "^0.0.6",
+     "types": "workspace:*"
   },
   "keywords": [],
   "author": "",
