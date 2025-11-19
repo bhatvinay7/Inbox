@@ -68,7 +68,47 @@ services:
       - redis
       - postgres-db
       - rabbitmq
-      - elesticsearch          
+      - elesticsearch
+  consumer-push2ElesticSearch:
+    build:
+      context: .
+      dockerfile: apps/consumer-Push2ElesticSearch/dockerfile.dev.yaml
+    ports:
+    - "3010:3010"
+    env_file:
+    -  apps/consumer-Push2ElesticSearch/.env
+    networks:
+    - inbox
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 512M
+    depends_on:
+      - redis
+      - postgres-db
+      - rabbitmq
+      - elesticsearch
+  publisher-publishMailFromIMAP:
+    build:
+      context: .
+      dockerfile: apps/publisher-publishMailFromIMAP/dockerfile.dev.yaml
+    ports:
+      - "3009:3009"
+    env_file:
+      -  apps/publisher-publishMailFromIMAP/.env
+    networks:
+      - inbox
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 512M
+    depends_on:
+      - redis
+      - postgres-db
+      - rabbitmq
+      - elesticsearch                                                    
   redis:
     image: "redis:latest"
     environment:
