@@ -3,22 +3,29 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-   "type":"module",
+  "type": "module",
   "scripts": {
     "build": "tsc -b"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
+    "ts-node": "^10.9.2",
+    "ts-node-esm": "^0.0.6",
     "typescript": "^5.9.3"
   },
   "types": "./dist/index.d.ts",
-"exports": {
-  ".": {
-    "import": "./dist/index.js",
-    "types": "./dist/index.d.ts"
-  }
-},
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "redis": "^5.9.0"
+  }
 }

@@ -24,7 +24,7 @@ async function ensureConnection() {
       retries -= 1;
       console.error(`ES connection failed. Retrying... (${5 - retries}/5)`);
       await new Promise((resolve,reject)=>{
-        setTimeout((resolve)=>{
+        setTimeout(()=>{
             resolve(true);
         }, 3000)
       });

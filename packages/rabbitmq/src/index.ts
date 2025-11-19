@@ -11,7 +11,7 @@ function getBackoffDelay(attempt: number) {
   return Math.min(delay, retryHigh);
 }
 
-async function callRabbit() => {
+async function callRabbit(){
   const labelQueue = 'labelQueue';
   const labelAssignedQueue = 'workerQueue';
   const IMAP_MAIL_QUEUE = 'workerQueue';
@@ -26,7 +26,7 @@ async function callRabbit() => {
   const imapmailChannel = await connection.createChannel();
   await imapmailChannel.assertQueue(IMAP_MAIL_QUEUE, { durable: true });
 
-  connection.on('error', async (err) => {
+  connection.on('error', async (err:any) => {
    const delay = getBackoffDelay(retryAttempt);
    console.log(`Retrying connection in ${delay} ms`)
    setTimeout(() => {
@@ -39,8 +39,8 @@ async function callRabbit() => {
    console.log('Connection successfully (re)established');
    retryAttempt=0
  });
- return {ssigntagChannel,sendMail};
+ return {assigntagChannel,sendMail,labelQueue,labelAssignedQueue,IMAP_MAIL_QUEUE,imapmailChannel};
 }
 
-const {ssigntagChannel, sendMail,labelQueue,labelAssignedQueue,IMAP_MAIL_QUEUE,imapmailChannel} = await callRabbit();
-export {ssigntagChannel, sendMail,labelQueue,labelAssignedQueue,imapmailChannel,IMAP_MAIL_QUEUE};
+const {assigntagChannel, sendMail,labelQueue,labelAssignedQueue,IMAP_MAIL_QUEUE,imapmailChannel} = await callRabbit();
+export {assigntagChannel, sendMail,labelQueue,labelAssignedQueue,imapmailChannel,IMAP_MAIL_QUEUE};
