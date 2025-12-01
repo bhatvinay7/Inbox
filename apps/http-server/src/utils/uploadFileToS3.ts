@@ -33,3 +33,5 @@ export async function uploadFileToS3(filePath:string) {
      throw new Error("Error while uploading the file")
   }
 }
+
+export default uploadFileToS3
