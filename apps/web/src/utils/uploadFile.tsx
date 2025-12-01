@@ -2,13 +2,13 @@ import axiosPublic from "../lib/axios";
 interface response {
     message: string,
     uuid:string,
-    processedChunks?:number
+    processedChunks?:string
 }
 export async function uploadFIleBuffer(uuid:string,file:File): Promise<response> {
     try {
         const chunkSize = 20 * 1024
         const totalChunks = Math.ceil(file.size / chunkSize);
-        let response:response
+        let response:any
         for (let index = 0; index < totalChunks; index++) {
          const start = index * chunkSize;
          const end = Math.min(file.size, start + chunkSize);
@@ -17,15 +17,16 @@ export async function uploadFIleBuffer(uuid:string,file:File): Promise<response>
          const formData = new FormData();
          formData.append("chunk", chunk);
          formData.append("fileName", file.name);
-         formData.append("index", index);
-         formData.append("totalChunks", totalChunks);
+         formData.append("index", ""+index);
+         formData.append("totalChunks", ""+totalChunks);
          response = await axiosPublic.post(`/api/uploadFileBuffer?uuid=${encodeURIComponent(uuid)}`,formData ,
             {
                 headers: { 'Content-Type': 'multipart/form-data' }
             }
         )
     }
-    if((response.data as {data:response}).data.processedChunks  !=totalChunks)
+    const result=(response as {data:response}).data
+    if(parseInt(result.processedChunks!)  !=totalChunks)
         throw new Error("Error while uploading the fule")
     return (response as {data:response}).data
 }
