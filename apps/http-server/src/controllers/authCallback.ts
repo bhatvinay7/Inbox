@@ -3,36 +3,39 @@ import jwt from "jsonwebtoken";
 import getUserdata from "../utils/getUserdata.js";
 import {AuthRequest } from 'types'
 import getRedisClient from 'redisclient'
-import prisma from 'prisma'
+import {prisma} from 'prisma'
 import dotenv from 'dotenv'
 dotenv.config()
-
+import {SelectedUser} from 'types'
 const SECRET_KEY = process.env.secret_key!;
 const ACCESS_KEY= process.env.access_key!
 const callbackHandler = async (req: AuthRequest, res: Response) => {
   try {
     const redis= await getRedisClient()
-    const data = await getUserdata(req, res);
-    console.log(data)
+    const data:SelectedUser = await getUserdata(req, res)
     if (!data?.email) {
       return res.status(400).json({ message: "Invalid user data" });
     }
-    let user= await prisma.user.findFirst({where:{ email: data.email }});
+    let user=    await prisma.user.findUnique({where:{ email: data.email }});
     if (!user) {
       user = await prisma.user.create({
-        name: data.name,
-        email: data.email,
-        isEmailVerified: true,
-        picture: data.picture,
-        refreshToken:data.refresh_token,
-      })
+       data:{
+         name: data.name,
+         email: data.email,
+         isEmailVerified: true,
+         picture: data.picture,
+         accessToken:data.access_token,
+         refreshToken:data.refresh_token
+       }   
+        })
     }
     
     else{
       await prisma.user.update({
         where:{email:data.email},
         data:{
-          refreshToken:data.data.refresh_token,
+          accessToken:data.access_token,
+          refreshToken:data.refresh_token,
         }
       })
     }
@@ -41,10 +44,8 @@ const callbackHandler = async (req: AuthRequest, res: Response) => {
         username: user.name!,
         email: user.email!,
         userId: user.id,
-        picture:user.picture,
+        picture: data.picture,
         isVerified:true,
-        google_access_token:data.access_token,
-        google_refresh_token:data.refresh_token
       },
       SECRET_KEY,
       { expiresIn: "24d" }
@@ -54,18 +55,15 @@ const callbackHandler = async (req: AuthRequest, res: Response) => {
         username: user.name!,
         email: user.email!,
         userId: user.id,
-        picture:user.picture,
+        picture: data.picture,
         isVerified:true,
-        google_access_token:data.access_token,
-        google_refresh_token:data.refresh_token
-        
       },
       ACCESS_KEY ,
       { expiresIn: "7d" }
     );
     
     await redis.set(`${user.id}-access_token`,data.access_token) 
-    await redis.set(`${user.id}-inbox-token`,refreshToken)
+    await redis.set(`${user.id}-inbox-token`,data.refresh_token)
     res.cookie("inbox_token", refreshToken , {
       httpOnly: true,
       secure: true,
