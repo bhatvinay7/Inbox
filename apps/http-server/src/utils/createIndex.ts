@@ -1,32 +1,45 @@
-import elasticClient from 'elsesticsearch';
-import { Request, Response } from 'express';
+import client from 'elastic-search'
+import dotenv from 'dotenv'
+dotenv.config()
 const INDEX_NAME = 'emails';
-async function createEmailIndex(){
-    try {
-    const indexExists = await elasticClient.indices.exists({ index: INDEX_NAME });
-        if (indexExists.body) {
-            console.log(`Index "${INDEX_NAME}" already exists.`);
-            return;
-        }
-    await elasticClient.indices.create({
-            index: INDEX_NAME,
-            mappings: {
-                properties: {
-                    uid: { type: 'integer',"index": true },
-                    subject: { type: 'text',"index": true },
-                    from: { type: 'text',"index": true },
-                    to: { type: 'text',"index": true },
-                    date: { type: 'date' },
-                    body: { type: 'text' },
-                    gmailLabels: { type: 'keyword',"index": true },
-                    created_at: { type: 'date' }
-                },
-            },
-        });
+
+export async function createEmailIndex() {
+  try {
+    const indexExists = await client.indices.exists({ index: INDEX_NAME });
+    if (indexExists) {
+      console.log(`Index "${INDEX_NAME}" already exists.`);
+      return;
     }
-    return 
-    catch (error: any) {
-        throw new Error(`Error creating index: ${error.message}`);
-    }
+    await client.indices.create({
+      index: INDEX_NAME,
+      mappings: {
+        properties: {
+          uuid:  { type: 'keyword' },
+          uid: { type: 'keyword' },
+          conversationId:{type:'keyword'},
+          messageId: { type: 'keyword' },
+          inReplyTo: { type: 'keyword' },
+          references: { type: 'keyword' },
+          parentId: { type: 'keyword' },
+          subject: { type: 'text' },
+          from: { type: 'text' },
+          to: { type: 'text' },
+          date: { type: 'date' },
+          body: { type: 'text' },
+          gmailLabels: { type: 'keyword' },
+          createdAt: { type: 'date' },
+          attachments: { type: 'keyword' },
+          delete: { type: 'keyword' },
+          isMarked : { type: 'keyword' }
+        },
+      },
+    });
+
+    console.log(`Index "${INDEX_NAME}" created successfully.`);
+  } catch (error: any) {
+    console.error(`Error creating index: ${error.message}`);
+    throw error;
+  }
 }
+
 export default createEmailIndex;

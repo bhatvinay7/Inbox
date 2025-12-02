@@ -1,9 +1,11 @@
-import {labelQueue} from 'amqplib';
-async function pusshMessageToqueue(msg:string){     
+import {postMailChannel, postMailQueue} from 'rabbitmq';
+async function pushMessageToqueue(msg:string){     
       try{ 
-      assigntagChannel.sendToQueue(labelQueue, Buffer.from(msg));
+      postMailChannel.sendToQueue(postMailQueue, Buffer.from(msg));
      }    
  catch(error:any){
-    throw new Error({message:`${error.message}`})
+    throw new Error(error.message)
  }
 }
+
+export default pushMessageToqueue
