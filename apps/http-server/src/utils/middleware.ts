@@ -21,8 +21,7 @@ export const authMiddleware = async (
       userId: decoded?.userId,
       username: decoded?.username,
       picture: decoded?.picture,
-      google_access_token: decoded.google_access_token,
-      google_refresh_token: decoded?.google_refresh_token,
+      token:token,
       email: decoded.email,
       isVerified: true,
     };
