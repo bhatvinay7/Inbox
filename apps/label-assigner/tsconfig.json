@@ -7,6 +7,6 @@
       "types":["../types/src/*"]
     },
   },
-  "include": ["src"],
+  "include": ["src", "../http-server/src/controllers/addCustomTagToMail.ts"],
   "exclude":["node_modules"]
 }

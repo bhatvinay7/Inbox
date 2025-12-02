@@ -1,11 +1,11 @@
 import express from 'express'
 const app = express();
-import {labelQueue} from "rabbitmq";
+import {IMAP_MAIL_QUEUE} from "rabbitmq";
 import consumeMessageFromQueue from "./utils/EmaillConsumer.js";
 const PORT=3007
 try{
   (async()=>{
-      await consumeMessageFromQueue('labelQueue');
+      await consumeMessageFromQueue(IMAP_MAIL_QUEUE);
   })();  
 }
 catch(error:any){
