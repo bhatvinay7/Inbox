@@ -8,10 +8,17 @@ const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI!;
 const googleauth= async(req:Request,res:Response)=>{
  try{
    const base = "https://accounts.google.com/o/oauth2/v2/auth";
+   const scope = [
+  "openid",
+  "profile",
+  "email",
+  "https://www.googleapis.com/auth/gmail.readonly",
+  "https://mail.google.com/"
+].join(" ");
    const url = `${base}?client_id=${encodeURIComponent(CLIENT_ID)}`
   + `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`
   + `&response_type=code`
-  + `&scope=openid%20profile%20email`
+  + `&scope=${scope}`
   + `&access_type=offline`
   + `&prompt=consent select_account`;
   res.redirect(url);
