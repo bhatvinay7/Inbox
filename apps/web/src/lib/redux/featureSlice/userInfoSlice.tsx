@@ -8,11 +8,11 @@ interface UserState extends userCredentials {
 }
 const initialState: UserState = {
   username: "",
-  userId: null,
+  userId: "",
   picture: "",
   email: "",
   token: "",
-  isVerified: null,
+  isVerified: false,
   state: "pending",
 };
 export const getUser_details = createAsyncThunk(
@@ -22,7 +22,7 @@ export const getUser_details = createAsyncThunk(
       const res = await getUserDetail();
       return res;
     } catch (err: any) {
-      return thunkAPI.rejectWithValue(err.response?.data || err.message);
+      return thunkAPI.rejectWithValue(err.response?.data || err.message) as any;
     }
   }
 );
@@ -30,7 +30,7 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {},
-  extraReducers: (builder):UserState => {
+  extraReducers: (builder)=> {
     builder
       .addCase(getUser_details.pending, (state) => {
         state.state = "loading";

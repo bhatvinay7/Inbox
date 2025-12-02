@@ -3,15 +3,17 @@ import React from 'react'
 import {Button } from 'inbox-ui'
 import Sidebar from "../../../../components/ui/sidebar";
 import MailDetailHeader from '../../../../components/ui/MailDatailHeader'
+import UserProfileWindow from '../../../../components/ui/userProfileWindow'
 import  { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import moment from "moment";
 import Header from '../../../../components/ui/header';
+import useProfile from "../../../../lib/hooks/useProfile";
 import { Star, Reply, Forward, MoreVertical, Printer, ExternalLink } from "lucide-react";
 export default function MailDetail() {
+  const {value}=useProfile()
   const { id } = useParams(); // mail id from URL
-
   const [email, setEmail] = useState({
   id: "1",
   from: "sundar.pichai@google.com",
@@ -69,7 +71,7 @@ Google Workspace`,
 
   return (
     <div  className='flex-1 flex flex-col w-full items-center bg-white min-h-screen '>
-  
+      {value && <UserProfileWindow/> }
       {/* <div className="mb-4"> */}
         {/* <h2 className="text-2xl font-semibold">{email.subject}</h2> */}
         {/* <p className="text-black text-sm">{email.tag}</p> */}

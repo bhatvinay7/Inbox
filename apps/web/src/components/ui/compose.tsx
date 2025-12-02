@@ -11,6 +11,8 @@ import { attachment, file, mail } from 'types'
 import { uploadFIleBuffer, uploadFile } from '../../utils/uploadFile'
 import { postMail } from "../../utils/postMail"
 import useProfile from '../../lib/hooks/usegetUserInfo'
+import CreateIndexedDB from '../../lib/Local_Indexed_DB/cleanLocal_DB'
+import StoreMail from  '../../lib/Local_Indexed_DB/storeMails'
 const ReactQuill = dynamic(
     async () => {
         const { default: RQ } = await import("react-quill-new");
@@ -29,6 +31,7 @@ export default function Compose() {
         try {
             const link: string[] = files?.map((each => each.link))
             const usermail = {
+                userId: user.userId,
                 from: user.email,
                 to: mail.to,
                 uuid: uuid(),
@@ -39,15 +42,27 @@ export default function Compose() {
                 tag: "",
                 uid: "",
                 raw: "",
+                parentMailId:"",
                 gmailLabels: [""],
                 attachments: [...link]
             }
             console.log(usermail)
             const response = await postMail(usermail)
+            await StoreMail(response)
         }
         catch (error: any) {
         }
     }
+    useEffect(() => {
+  async function createDB() {
+    try {
+      await CreateIndexedDB();
+    } catch (error) {
+      console.error("Failed to create IndexedDB:", error);
+    }
+  }
+  createDB();
+}, []);
 
     async function handleFileChange(e) {
         try {

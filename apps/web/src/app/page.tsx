@@ -1,7 +1,7 @@
 'use client'
 import { Mail, Sparkles, Repeat, Send } from "lucide-react";
 import { motion } from "framer-motion";
-
+import LadingPageHeader from "../components/ui/ladingPageHeader";
 export default function LandingPage() {
   // Motion Variants
   const heroVariants = {
@@ -21,21 +21,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-[hsl(244,21%,15%)] transition-colors duration-300">
-      {/* Navbar */}
-      <nav className="w-full py-4 px-8 flex justify-between items-center shadow-sm bg-white dark:bg-gray-800">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white/75">Inbox</h1>
-        <button
-          id="themeToggle"
-          className="px-4 py-2 rounded-xl border dark:border-gray-700 shadow-sm text-gray-900 dark:text-white"
-          onClick={() => {
-            document.documentElement.classList.toggle('dark');
-          }}
-        >
-          Toggle Theme
-        </button>
-      </nav>
-
-      {/* Hero Section */}
+      <LadingPageHeader/>
       <motion.section
         className="px-8 py-20 flex flex-col md:flex-row items-center justify-center relative"
         initial="hidden"
