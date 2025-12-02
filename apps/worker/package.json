@@ -14,13 +14,15 @@
   "express": "^5.1.0",
   "axios": "^1.13.2",
   "redisclient": "workspace:*",
-  "rabbitmq": "workspace:*"
+  "rabbitmq": "workspace:*",
+  "prisma":"workspace:*"
     
 },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "typescript": "^5.9.3",
      "@types/express": "^5.0.5",
+     "tsc-node": "^0.0.3",
      "ts-node": "^10.9.2",
      "ts-node-esm": "^0.0.6",
      "types": "workspace:*"

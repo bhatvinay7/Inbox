@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/utils/consume_mailfrom_postmail_queue.ts","./src/utils/getaccesstoken.ts","./src/utils/sendemail_caller.ts","./src/utils/sendmail.ts"],"version":"5.9.3"}

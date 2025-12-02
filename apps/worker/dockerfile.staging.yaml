@@ -1,5 +1,5 @@
 FROM node:20 as base
-RUN npm install -g pnpm turbo ts-node
+RUN npm install -g pnpm turbo
 
 FROM base AS prunner
 ARG APP=worker
@@ -7,8 +7,8 @@ WORKDIR /app
 COPY . .
 RUN turbo prune --scope=$APP --docker
 FROM base AS installer
-ARG APP=worker
 WORKDIR /app
+ARG APP=worker
 COPY --from=prunner /app/out/json/ .
 COPY --from=prunner /app/out/full/ .
 COPY package.json ./
@@ -16,15 +16,22 @@ COPY pnpm-lock.yaml ./
 COPY pnpm-workspace.yaml ./
 COPY packages ./packages
 COPY apps/${APP}/package.json ./apps/${APP}/package.json
-RUN pnpm install --prod=false
+RUN pnpm install --filter ${APP}
 
 
-FROM base AS runner
+FROM base AS builder
 ARG APP=worker
 WORKDIR /app
 COPY --from=installer /app ./
 WORKDIR /app/apps/${APP}
+RUN pnpm --filter prisma  run build
 RUN pnpm --filter=${APP}... run build
+RUN pnpm --filter=${APP} deploy /app/outdir --prod
 
+FROM node:20 as runner
+ARG APP=worker
+WORKDIR /app
+COPY --from=builder /app/outdir/. ./apps/${APP}/
+WORKDIR /app/apps/${APP}
 EXPOSE 3008
-CMD ["pnpm","run","dev"] 
+CMD ["node","dist/index.js"] 

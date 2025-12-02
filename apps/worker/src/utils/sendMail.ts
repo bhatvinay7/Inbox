@@ -1,11 +1,11 @@
 import axios from 'axios'
 import {google_API_SendMessage_Response} from 'types'
-async function sendMailThroughGoogleAPI(from:string,subject:string,accessToken:string):Promise<google_API_SendMessage_Response>{
+async function sendMailThroughGoogleAPI(from:string,to:string,subject:string,accessToken:string,body:string):Promise<google_API_SendMessage_Response>{
 const rawEmail =
   `From:${from} \r\n` +
   `To: ${to}\r\n` +
   `Subject: ${subject}\r\n\r\n` +
-  `${content}`;
+  `${body}`;
 const base64Url = Buffer.from(rawEmail)
   .toString("base64")
   .replace(/\+/g, "-")
