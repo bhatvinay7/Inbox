@@ -1,4 +1,4 @@
-import amqplib from 'amqplib';
+import amqplib,{ConsumeMessage} from 'amqplib';
 import dotenv from 'dotenv';
 const RABBITMQ_CLUSTER_URL = process.env.RABBITMQ_CLUSTER_URL!;
 dotenv.config();
@@ -12,16 +12,16 @@ function getBackoffDelay(attempt: number) {
 }
 
 async function callRabbit(){
-  const labelQueue = 'labelQueue';
+  const postMailQueue = 'postMail';
   const labelAssignedQueue = 'workerQueue';
   const IMAP_MAIL_QUEUE = 'workerQueue';
   const connection = await amqplib.connect(RABBITMQ_CLUSTER_URL!);
 
-  const assigntagChannel = await connection.createChannel();
-  await assigntagChannel.assertQueue(labelQueue, { durable: true });
+  const postMailChannel = await connection.createChannel();
+  await postMailChannel.assertQueue( postMailQueue, { durable: true });
 
-  const sendMail= await connection.createChannel();
-  await sendMail.assertQueue(labelAssignedQueue, { durable: true });
+  const storeMail= await connection.createChannel();
+  await storeMail.assertQueue(labelAssignedQueue, { durable: true });
   
   const imapmailChannel = await connection.createChannel();
   await imapmailChannel.assertQueue(IMAP_MAIL_QUEUE, { durable: true });
@@ -39,8 +39,9 @@ async function callRabbit(){
    console.log('Connection successfully (re)established');
    retryAttempt=0
  });
- return {assigntagChannel,sendMail,labelQueue,labelAssignedQueue,IMAP_MAIL_QUEUE,imapmailChannel};
+ return {postMailChannel, storeMail, postMailQueue,labelAssignedQueue,IMAP_MAIL_QUEUE,imapmailChannel};
 }
 
-const {assigntagChannel, sendMail,labelQueue,labelAssignedQueue,IMAP_MAIL_QUEUE,imapmailChannel} = await callRabbit();
-export {assigntagChannel, sendMail,labelQueue,labelAssignedQueue,imapmailChannel,IMAP_MAIL_QUEUE};
+const {postMailChannel, storeMail, postMailQueue,labelAssignedQueue,IMAP_MAIL_QUEUE,imapmailChannel} = await callRabbit();
+export {postMailChannel, storeMail, postMailQueue,labelAssignedQueue,imapmailChannel,IMAP_MAIL_QUEUE};
+export type {ConsumeMessage}

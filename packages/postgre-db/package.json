@@ -2,16 +2,17 @@
   "name": "prisma",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
   "type": "module",
   "scripts": {
-    "build": "pnpx prisma generate && npx prisma migrate deploy && tsc -b"
+    "build": " pnpm prisma generate  && tsc -b"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^22.15.3",
+    "prisma": "^6.19.0",
     "ts-node": "^10.9.2",
-    "ts-node-esm": "^0.0.6",
+    "tsc-node": "^0.0.3",
     "typescript": "^5.9.3"
   },
   "types": "./dist/index.d.ts",
@@ -25,9 +26,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^6.19.0",
-    "@swc/core": "^1.15.2",
-    "dotenv": "^17.2.3",
-    "prisma": "^7.0.0"
+     "@prisma/client": "6.19.0",
+    "dotenv": "^17.2.3"
   }
 }

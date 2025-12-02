@@ -1,12 +1,21 @@
-{  "extends": "@repo/typescript-config/base.json",
+{
+  "extends": "@repo/typescript-config/base.json",
   "ts-node": { "logError": true },
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "paths":{
-      "types":["../types/src/*"]
-    },
+
+    "declaration": true,
+    "declarationMap": true,
+    // "emitDeclarationOnly": false,
+
+    "strict": true,
+    "esModuleInterop": true,
+
+    "paths": {
+      "types": ["../types/src/*"]
+    }
   },
-  "include": ["src"],
-  "exclude":["node_modules"]
+  "include": ["src", "prisma.config.ts"],
+  "exclude": ["node_modules"]
 }

@@ -1,21 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
 model User {
-  id        String @id @default(uuid()) @db.Uuid
-  email     String   @unique
-  password String?    
-  name      String?
-  role      Role     @default(USER)
-  refreshToken String? @default("") 
-  createdAt DateTime @default(now())
-  session   NoteSession[]
-@@index([id], name: "note_user_id_idx")
-@@index([email], name: "note_user_email_idx")
+  id              String       @id @default(uuid()) @db.Uuid
+  email           String       @unique
+  password        String?
+  name            String?
+  role            Role                 @default(USER)
+  accessToken     String   @db.Text    @default("")
+  refreshToken    String   @db.Text     @default("")
+  createdAt       DateTime              @default(now())
+  picture         String?
+  isEmailVerified Boolean
+  channels        Channel[]
+  mails           Mail[]
+  mailStatuses    MailStatus[]
+
+  @@index([email], map: "user_email_idx")
 }
 
+model Mail {
+  id             String       @id @default(uuid()) @db.Uuid
+  userId         String       @db.Uuid
+  uuid           String
+  messageId      String       @unique
+  inReplyTo      String?
+  references     String?
+  conversationId String?
+  parentMailId   String?      @db.Uuid
+  to             String?
+  subject        String?
+  body           String?
+  date           DateTime     @default(now())
+  tag            String?      @default("")
+  uid            String?      @default("")
+  raw            String?      @default("")
+  gmailLabels    String?      @default("")
+  status         Status       @default(PROCESSING)
+  from           String
+  attachments    Attachment[]
+  parentMail     Mail?        @relation("MailReplies", fields: [parentMailId], references: [id])
+  threadReplies  Mail[]       @relation("MailReplies")
+  user           User         @relation(fields: [userId], references: [id])
+  mailStatuses   MailStatus[]
+
+  @@index([userId])
+  @@index([messageId])
+  @@index([uuid])
+  @@index([uid])
+}
+
+model MailStatus {
+  id         String  @id @default(uuid()) @db.Uuid
+  delete     Boolean @default(false)
+  isMarked   Boolean @default(false)
+  mailId     String  @db.Uuid
+  receiverId String  @db.Uuid
+  mail       Mail    @relation(fields: [mailId], references: [id])
+  user       User    @relation(fields: [receiverId], references: [id])
+
+  @@index([mailId])
+  @@index([receiverId])
+}
+
+model Attachment {
+  id     String @id @default(uuid()) @db.Uuid
+  mailId String @db.Uuid
+  link   String
+  mail   Mail   @relation(fields: [mailId], references: [id])
+
+  @@index([mailId])
+}
+
+model Channel {
+  id     String  @id @default(uuid()) @db.Uuid
+  userId String? @db.Uuid
+  user   User?   @relation(fields: [userId], references: [id])
+}
+
+enum Status {
+  PROCESSING
+  SENT
+  FAILED
+}
+
+enum Role {
+  USER
+  ADMIN
+}
