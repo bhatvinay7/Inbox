@@ -2,7 +2,7 @@ services:
   # inbox-web:
     # build:
       # context: .
-      # dockerfile: apps/web/dockerfile.dev.yaml
+      # dockerfile: apps/web/dockerfile.staging.yaml
     # ports:
       # - "3000:3000"
     # env_file:
@@ -18,7 +18,7 @@ services:
     container_name: http-server
     build:
       context: .
-      dockerfile: apps/http-server/dockerfile.dev.yaml
+      dockerfile: apps/http-server/dockerfile.staging.yaml
     ports:
       - "3002:3002"
     env_file:
@@ -35,7 +35,7 @@ services:
       container_name: publisher-publish-mail-from-imap
       build:
         context: .
-        dockerfile: apps/publisher-publish-mail-from-imap/dockerfile.dev.yaml
+        dockerfile: apps/publisher-publish-mail-from-imap/dockerfile.staging.yaml
       ports:
         - "3009:3009"
       env_file:
@@ -45,7 +45,7 @@ services:
       deploy:
         resources:
           limits:
-            cpus: '0.5'
+            cpus: '0.25'
             memory: 1G
       depends_on:
         - rabbitmq
@@ -55,7 +55,7 @@ services:
     container_name: label-assigner
     build:
       context: .
-      dockerfile: apps/label-assigner/dockerfile.dev.yaml
+      dockerfile: apps/label-assigner/dockerfile.staging.yaml
     ports:
       - "3007:3007"
     env_file:
@@ -74,7 +74,7 @@ services:
     container_name: worker
     build:
       context: .
-      dockerfile: apps/worker/dockerfile.dev.yaml
+      dockerfile: apps/worker/dockerfile.staging.yaml
     ports:
       - "3008:3008"
     env_file:
@@ -93,7 +93,7 @@ services:
     container_name: consumer-push2storage
     build:
       context: .
-      dockerfile: apps/consumer-push2storage/dockerfile.dev.yaml
+      dockerfile: apps/consumer-push2storage/dockerfile.staging.yaml
     ports:
       - "3010:3010"
     env_file:
@@ -142,7 +142,6 @@ services:
           # cpus: '0.4'
           # memory: 700M    
   rabbitmq:
-    container_name: rabbitmq
     image: "rabbitmq:3-management"
     environment:
       RABBITMQ_DEFAULT_USER: inbox_user
@@ -162,7 +161,6 @@ services:
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.6.2 
-    container_name: elasticsearch
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -175,7 +173,7 @@ services:
       - "logger.org.elasticsearch=DEBUG"
     volumes:
       - es-data:/usr/share/elasticsearch/data 
-      # - ./logs:/usr/share/elasticsearch/logs 
+      - ./logs:/usr/share/elasticsearch/logs 
     # ulimits:
       # memlock:
         # soft: -1
@@ -192,8 +190,7 @@ services:
           memory: '2G'           
 networks:
   inbox:
-    name: inbox
-    driver: bridge                  
+    driver: bridge          
 volumes:    
   es-data:
   rabbitmq-data:

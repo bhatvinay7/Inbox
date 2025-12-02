@@ -1,14 +1,14 @@
 FROM node:20 as base
-RUN npm install -g pnpm turbo
+RUN npm install -g pnpm turbo ts-node
 
 FROM base AS prunner
-ARG APP=ws-server
+ARG APP=consumer-push2storage
 WORKDIR /app
 COPY . .
 RUN turbo prune --scope=$APP --docker
 FROM base AS installer
+ARG APP=consumer-push2storage
 WORKDIR /app
-ARG APP=ws-server
 COPY --from=prunner /app/out/json/ .
 COPY --from=prunner /app/out/full/ .
 COPY package.json ./
@@ -16,15 +16,15 @@ COPY pnpm-lock.yaml ./
 COPY pnpm-workspace.yaml ./
 COPY packages ./packages
 COPY apps/${APP}/package.json ./apps/${APP}/package.json
-RUN pnpm install --filter ${APP}
+RUN pnpm install --prod=false
 
 
 FROM base AS runner
-ARG APP=ws-server
+ARG APP=consumer-push2storage
 WORKDIR /app
 COPY --from=installer /app ./
 WORKDIR /app/apps/${APP}
 RUN pnpm --filter=${APP}... run build
 
-EXPOSE 3012
+EXPOSE 3010
 CMD ["pnpm","run","dev"] 

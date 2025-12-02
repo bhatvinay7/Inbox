@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/types/imapflow.d.ts","./src/utils/imap_connection.ts","./src/utils/imap_user_connection.ts","./src/utils/imap_connection_set.ts","./src/utils/getaccesstoken.ts","./src/utils/listerners.ts","./src/utils/publisher.ts","./src/utils/pull_user_mails.ts"],"version":"5.9.3"}

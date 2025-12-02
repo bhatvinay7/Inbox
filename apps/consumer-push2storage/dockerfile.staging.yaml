@@ -2,13 +2,13 @@ FROM node:20 as base
 RUN npm install -g pnpm turbo
 
 FROM base AS prunner
-ARG APP=ws-server
+ARG APP=consumer-push2storage
 WORKDIR /app
 COPY . .
 RUN turbo prune --scope=$APP --docker
 FROM base AS installer
 WORKDIR /app
-ARG APP=ws-server
+ARG APP=consumer-push2storage
 COPY --from=prunner /app/out/json/ .
 COPY --from=prunner /app/out/full/ .
 COPY package.json ./
@@ -19,12 +19,20 @@ COPY apps/${APP}/package.json ./apps/${APP}/package.json
 RUN pnpm install --filter ${APP}
 
 
-FROM base AS runner
-ARG APP=ws-server
+FROM base AS  builder
+ARG APP=consumer-push2storage
 WORKDIR /app
 COPY --from=installer /app ./
 WORKDIR /app/apps/${APP}
+RUN pnpm --filter prisma  run build
 RUN pnpm --filter=${APP}... run build
+RUN pnpm --filter=${APP} deploy /app/outdir --prod
 
-EXPOSE 3012
-CMD ["pnpm","run","dev"] 
+FROM node:20 as runner
+ARG APP=consumer-push2storage
+WORKDIR /app
+COPY --from=builder /app/outdir/. ./apps/${APP}/
+WORKDIR /app/apps/${APP}
+
+EXPOSE 3010
+CMD ["node","dist/index.js"] 
