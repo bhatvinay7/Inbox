@@ -1,135 +1,395 @@
-# Turborepo starter
+# Inbox - Cold Email Management System
 
-This Turborepo starter is maintained by the Turborepo core team.
+A modern email management system built with Turborepo monorepo architecture, featuring microservices for handling email processing, storage, and real-time updates.
 
-## Using this example
+## 📁 Project Structure
 
-Run the following command:
-
-```sh
-npx create-turbo@latest
-```
-
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+This project uses **Turborepo** as a monorepo management tool with the following structure:
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+inbox/
+├── apps/
+│   ├── consumer-push2storage/    # Consumes messages and stores to database
+│   ├── http-server/               # Main HTTP API server
+│   ├── label-assigner/            # Assigns labels to emails
+│   ├── publisher-publish-mail-from-imap/  # Publishes emails from IMAP
+│   ├── web/                       # Frontend Next.js application
+│   ├── worker/                    # Background job processor
+│   └── ws-server/                 # WebSocket server for real-time updates
+├── packages/
+│   ├── elasticSearch/             # Elasticsearch utilities
+│   ├── eslint-config/             # Shared ESLint configuration
+│   ├── postgre-db/                # PostgreSQL database client
+│   ├── rabbitmq/                  # RabbitMQ client utilities
+│   ├── redisClient/               # Redis client utilities
+│   ├── types/                     # Shared TypeScript types
+│   ├── typescript-config/         # Shared TypeScript configuration
+│   └── ui/                        # Shared UI components
+└── docker-compose.yml
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+## 🚀 Quick Start
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+### Prerequisites
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+- **Node.js** (v18 or higher)
+- **Docker** and **Docker Compose**
+- **Git**
+- **pnpm** (recommended) or npm/yarn
 
-### Develop
+### 1. Fork and Clone the Repository
 
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```bash
+# Fork the repository on GitHub, then clone your fork
+git clone https://github.com/YOUR_USERNAME/inbox.git
+cd inbox
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### 2. Install Dependencies
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+```bash
+# Install pnpm globally if you haven't already
+npm install -g pnpm
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+# Install all dependencies
+pnpm install
 ```
 
-### Remote Caching
+## 🐳 Docker Setup
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+### Starting Services with Docker Compose
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+The project includes a `docker-compose.yml` file that sets up all required services:
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+- PostgreSQL database
+- Redis cache
+- Elasticsearch
+- RabbitMQ message broker
 
-```
-cd my-turborepo
+```bash
+# Start all services in detached mode
+docker-compose up -d
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
+# Check if all services are running
+docker-compose ps
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
+# View logs
+docker-compose logs -f
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+# Stop all services
+docker-compose down
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+# Stop and remove volumes (clean slate)
+docker-compose down -v
 ```
 
-## Useful Links
+## 🔐 Setting Up External Services
 
-Learn more about the power of Turborepo:
+### 1. Google OAuth Setup
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the **Gmail API**:
+   - Navigate to "APIs & Services" > "Library"
+   - Search for "Gmail API" and enable it
+4. Create OAuth 2.0 credentials:
+   - Go to "APIs & Services" > "Credentials"
+   - Click "Create Credentials" > "OAuth client ID"
+   - Choose "Web application"
+   - Add authorized redirect URIs:
+     - `http://localhost:3002/api/auth/callback/google`
+   - Save and copy the **Client ID** and **Client Secret**
+
+### 2. Redis Setup (Cloud Option)
+
+If you prefer a cloud Redis instance instead of Docker:
+
+1. Sign up for [Redis Cloud](https://redis.com/try-free/) or [Upstash](https://upstash.com/)
+2. Create a new Redis database
+3. Copy the connection details:
+   - Host
+   - Port
+   - Password
+   - Username (usually 'default')
+
+**Note:** For local development, the Docker Compose setup includes Redis, so this step is optional.
+
+### 3. PostgreSQL Setup
+
+The Docker Compose file includes PostgreSQL. Connection details:
+
+- **Host:** localhost
+- **Port:** 5432
+- **Database:** inbox_db
+- **Username:** inbox_user
+- **Password:** inbox_password
+
+**Database URL format:**
+```
+postgresql://inbox_user:inbox_password@localhost:5432/inbox_db
+```
+
+### 4. Cloudinary Setup (for image storage)
+
+1. Sign up at [Cloudinary](https://cloudinary.com/)
+2. Go to your Dashboard
+3. Copy the following details:
+   - Cloud Name
+   - API Key
+   - API Secret
+
+## ⚙️ Environment Variables Setup
+
+Create `.env` files in the respective application directories:
+
+### `/apps/web/.env`
+
+```env
+NEXT_PUBLIC_FRONTEND_URL="http://localhost:3000"
+GOOGLE_CLIENT_ID='your_google_client_id_here'
+GOOGLE_CLIENT_SECRET='your_google_client_secret_here'
+GOOGLE_REDIRECT_URI="http://localhost:3002/api/auth/callback/google"
+DATABASE_URL="postgresql://inbox_user:inbox_password@localhost:5432/inbox_db"
+REDIS_USERNAME='default'
+REDIS_PASSWORD='your_redis_password_here'
+REDIS_HOST='localhost'
+REDIS_PORT='6379'
+```
+
+### `/apps/http-server/.env`
+
+```env
+NEXT_PUBLIC_FRONTEND_URL="http://localhost:3000"
+WORKER_BACKEND_URL='http://worker:3008'
+DATABASE_URL="postgresql://inbox_user:inbox_password@localhost:5432/inbox_db"
+REDIS_USERNAME='default'
+REDIS_PASSWORD='your_redis_password_here'
+REDIS_HOST='localhost'
+REDIS_PORT='6379'
+secret_key='your_secret_key_here'
+access_key='your_access_key_here'
+```
+
+### `/apps/publisher-publish-mail-from-imap/.env`
+
+```env
+IMAP_BACKEND_URL='http://publisher-publish-mail-from-imap:3009'
+RABBITMQ_CLUSTER_URL="amqp://inbox_user:inbox_password@localhost:5672/"
+DATABASE_URL="postgresql://inbox_user:inbox_password@localhost:5432/inbox_db"
+```
+
+### `/apps/worker/.env`
+
+```env
+WORKER_BACKEND_URL='http://worker:3008'
+DATABASE_URL="postgresql://inbox_user:inbox_password@localhost:5432/inbox_db"
+RABBITMQ_CLUSTER_URL="amqp://inbox_user:inbox_password@localhost:5672/"
+CLOUDINARY_NAME='your_cloudinary_name'
+API_KEY='your_cloudinary_api_key'
+API_SECRET='your_cloudinary_api_secret'
+```
+
+### `/apps/consumer-push2storage/.env`
+
+```env
+DATABASE_URL="postgresql://inbox_user:inbox_password@localhost:5432/inbox_db"
+RABBITMQ_CLUSTER_URL="amqp://inbox_user:inbox_password@localhost:5672/"
+ELESTIC_SEARCH_CONNECTION_URL="http://localhost:9200"
+```
+
+### `/apps/ws-server/.env`
+
+```env
+REDIS_USERNAME='default'
+REDIS_PASSWORD='your_redis_password_here'
+REDIS_HOST='localhost'
+REDIS_PORT='6379'
+```
+
+### `/apps/label-assigner/.env`
+
+```env
+DATABASE_URL="postgresql://inbox_user:inbox_password@localhost:5432/inbox_db"
+RABBITMQ_CLUSTER_URL="amqp://inbox_user:inbox_password@localhost:5672/"
+```
+
+## 🗄️ Database Setup with Prisma
+
+### 1. Generate Prisma Client
+
+```bash
+# Navigate to the database package
+cd packages/postgre-db
+
+# Generate Prisma client
+pnpm prisma generate
+
+# Return to root
+cd ../..
+```
+
+### 2. Run Database Migrations
+
+```bash
+# Navigate to the database package
+cd packages/postgre-db
+
+# Run migrations
+pnpm prisma migrate dev
+
+# Or if you want to push schema without migration
+pnpm prisma db push
+
+# Return to root
+cd ../..
+```
+
+### 3. Seed Database (Optional)
+
+```bash
+cd packages/postgre-db
+pnpm prisma db seed
+cd ../..
+```
+
+## 🏗️ Building and Running the Project
+
+### Development Mode
+
+```bash
+# Run all applications in development mode
+pnpm dev
+
+# Run specific application
+pnpm dev --filter=web
+pnpm dev --filter=http-server
+```
+
+### Build for Production
+
+```bash
+# Build all applications
+pnpm build
+
+# Build specific application
+pnpm build --filter=web
+```
+
+### Start Production Build
+
+```bash
+# Start all applications
+pnpm start
+
+# Start specific application
+pnpm start --filter=web
+```
+
+## 📦 Available Services and Ports
+
+| Service | Port | Description |
+|---------|------|-------------|
+| Web (Frontend) | 3000 | Next.js web application |
+| HTTP Server | 3002 | Main API server |
+| Worker | 3008 | Background job processor |
+| IMAP Publisher | 3009 | Email publisher service |
+| WebSocket Server | 3010 | Real-time updates |
+| PostgreSQL | 5432 | Database |
+| Redis | 6379 | Cache and session store |
+| RabbitMQ | 5672 | Message broker |
+| RabbitMQ Management | 15672 | RabbitMQ web UI |
+| Elasticsearch | 9200 | Search engine |
+
+## 🧪 Testing
+
+```bash
+# Run tests for all packages
+pnpm test
+
+# Run tests for specific package
+pnpm test --filter=web
+```
+
+## 🔍 Useful Commands
+
+```bash
+# Check for linting errors
+pnpm lint
+
+# Format code
+pnpm format
+
+# Clean all node_modules and build artifacts
+pnpm clean
+
+# View Prisma Studio (database GUI)
+cd packages/postgre-db && pnpm prisma studio
+```
+
+## 🐛 Troubleshooting
+
+### Docker services not starting
+
+```bash
+# Check Docker logs
+docker-compose logs
+
+# Restart specific service
+docker-compose restart postgres
+```
+
+### Port already in use
+
+```bash
+# Find process using port (example: port 3000)
+lsof -i :3000
+
+# Kill the process
+kill -9 <PID>
+```
+
+### Prisma Client errors
+
+```bash
+# Regenerate Prisma Client
+cd packages/postgre-db
+pnpm prisma generate
+```
+
+### RabbitMQ connection issues
+
+1. Ensure RabbitMQ is running: `docker-compose ps`
+2. Check RabbitMQ management UI at `http://localhost:15672`
+   - Username: `inbox_user`
+   - Password: `inbox_password`
+
+## 📚 Additional Resources
+
+- [Turborepo Documentation](https://turbo.build/repo/docs)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Prisma Documentation](https://www.prisma.io/docs)
+- [RabbitMQ Tutorials](https://www.rabbitmq.com/getstarted.html)
+- [Redis Documentation](https://redis.io/docs)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 💡 Support
+
+For issues and questions:
+- Create an issue on GitHub
+- Check existing documentation
+- Review closed issues for solutions
+
+---
+
+**Happy Coding! 🚀**
