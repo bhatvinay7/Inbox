@@ -3,6 +3,8 @@
 A modern email management system built with Turborepo monorepo architecture, featuring microservices for handling email processing, storage, and real-time updates.
 
 ## 📁 Project Structure
+# Notion doc
+[Inbox - cold mailing platform](https://www.notion.so/Inbox-cold-mailing-platform-2c51db0b040e80ff9817e9e4a185caca?source=copy_link)
 
 This project uses **Turborepo** as a monorepo management tool with the following structure:
 
