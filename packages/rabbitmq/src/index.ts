@@ -13,7 +13,7 @@ function getBackoffDelay(attempt: number) {
 
 async function callRabbit(){
   const postMailQueue = 'postMail';
-  const labelAssignedQueue = 'workerQueue';
+  const labelAssignedQueue = 'labelAssignQueue';
   const IMAP_MAIL_QUEUE = 'workerQueue';
   const connection = await amqplib.connect(RABBITMQ_CLUSTER_URL!);
 
